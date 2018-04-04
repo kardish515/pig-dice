@@ -39,6 +39,11 @@ Turn.prototype.sumArray = function() {
   return sum;
 };
 
+Turn.prototype.resetTurnStats = function () {
+  this.runningTotal = [];
+  this.rollAgain = true;
+};
+
 Hand.prototype.updateScore = function(number) {
   this.total += number;
 };
@@ -68,41 +73,101 @@ $(document).ready(function(){
   // });
 
   var newGame = new Game();
-  console.log(newGame.currentPlayer);
+
   var playerOneHand = new Hand();
   var playerTwoHand = new Hand();
+
+  var currentTurn1 = new Turn();
+  var turnScore1 = 0;
+  var runningTotal1 = currentTurn1.runningTotal;
+
+  var currentTurn2 = new Turn();
+  var turnScore2 = 0;
+  var runningTotal2 = currentTurn2.runningTotal;
 
   if (newGame.currentPlayer === 1) {
     $("#player-board-two button.roll").hide();
     $("#player-board-two button.hold").hide();
-
-    var currentTurn = new Turn();
-    var turnScore = 0;
-    var runningTotal = currentTurn.runningTotal;
-
   } else {
     $("#player-board-one button.roll").hide();
     $("#player-board-one button.hold").hide();
-
-    var currentTurn = new Turn();
-    var turnScore = 0;
-    var runningTotal = currentTurn.runningTotal;
   }
 
-  $("button.roll").click(function() {
-    currentTurn.addRoll();
-    if (currentTurn.rollAgain === true){
-      $("ul#player-one-rolls").append("<li>" + runningTotal[0] + "</li>");
-      turnScore = currentTurn.sumArray();
-      $("#turn-score").text(turnScore);
+  $("#player-board-one button.roll").click(function() {
+    currentTurn1.addRoll();
+    if (currentTurn1.rollAgain === true){
+      $("ul#player-one-rolls").append("<li>" + runningTotal1[0] + "</li>");
+      turnScore1 = currentTurn1.sumArray();
+      $("#turn-score-one").text(turnScore1);
     } else {
       $("ul#player-one-rolls").append("<li>Bust!</li>");
-      $("#turn-score").text("Bust!");
+      $("#turn-score-one").text("Bust!");
+
+      $("#player-board-one button.roll").hide();
+      $("#player-board-one button.hold").hide();
+      $("#player-board-two button.roll").show();
+      $("#player-board-two button.hold").show();
+
+      $("ul#player-one-rolls").empty();
+      $("#turn-score-one").empty();
+
+      currentTurn1.resetTurnStats();
+      runningTotal1 = currentTurn1.runningTotal;
     }
   });
 
-  $("button.hold").click(function(){
-    handScore.updateScore(turnScore);
-    $("#player1-score").text(handScore.total);
+  $("#player-board-one button.hold").click(function(){
+    playerOneHand.updateScore(turnScore1);
+    $("#player1-score").text(playerOneHand.total);
+
+    $("#player-board-one button.roll").hide();
+    $("#player-board-one button.hold").hide();
+    $("#player-board-two button.roll").show();
+    $("#player-board-two button.hold").show();
+
+    $("ul#player-one-rolls").empty();
+    $("#turn-score-one").empty();
+
+    currentTurn1.resetTurnStats();
+    runningTotal1 = currentTurn1.runningTotal;
+  });
+
+  $("#player-board-two button.roll").click(function() {
+    currentTurn2.addRoll();
+    if (currentTurn2.rollAgain === true){
+      $("ul#player-two-rolls").append("<li>" + runningTotal2[0] + "</li>");
+      turnScore2 = currentTurn2.sumArray();
+      $("#turn-score-two").text(turnScore2);
+    } else {
+      $("ul#player-two-rolls").append("<li>Bust!</li>");
+      $("#turn-score-two").text("Bust!");
+
+      $("#player-board-two button.roll").hide();
+      $("#player-board-two button.hold").hide();
+      $("#player-board-one button.roll").show();
+      $("#player-board-one button.hold").show();
+
+      $("ul#player-two-rolls").empty();
+      $("#turn-score-two").empty();
+
+      currentTurn2.resetTurnStats();
+      runningTotal2 = currentTurn2.runningTotal;
+    }
+  });
+
+  $("#player-board-two button.hold").click(function(){
+    playerTwoHand.updateScore(turnScore2);
+    $("#player2-score").text(playerTwoHand.total);
+
+    $("#player-board-two button.roll").hide();
+    $("#player-board-two button.hold").hide();
+    $("#player-board-one button.roll").show();
+    $("#player-board-one button.hold").show();
+
+    $("ul#player-two-rolls").empty();
+    $("#turn-score-two").empty();
+
+    currentTurn2.resetTurnStats();
+    runningTotal2 = currentTurn2.runningTotal;
   });
 });
