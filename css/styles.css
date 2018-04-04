@@ -1,3 +1,20 @@
+h1, h3, h5 {
+  text-align: center;
+}
+
+#mode-selection {
+  display: flex;
+  flex-direction: column;
+}
+
 .hide{
   display: none;
+}
+
+button {
+  margin:5px;
+}
+
+ul {
+  list-style: none;
 }

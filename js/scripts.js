@@ -294,7 +294,7 @@ $(document).ready(function(){
           $("#player2-score").text(playerTwoHand.total);
           showHide("two");
           showHide("one");
-          
+
           $("ul#player-two-rolls").empty();
           $("#turn-score-two").empty();
 
