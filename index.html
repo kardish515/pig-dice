@@ -30,7 +30,8 @@
           <button type="submit" class="btn btn-info">Submit</button>
         </form>
       </div>
-      <div id="game-board" class="row hide">
+
+      <div id="game-board" class="row">
         <div class="col-md-6">
           <h3>Player1</h3>
           <div class="row player_scoreboard">
@@ -39,13 +40,17 @@
               <h4 id="player1-score">0</h4>
             </div>
           </div>
+
           <div id="player-board-one">
-            <div class="roll-die">
-            </div>
-            <div class="die hide">
-            </div>
+            <button type="button" class="btn btn-primary roll">Roll</button>
+            <button type="button" class="btn btn-success hold">Hold</button>
+            <h4 id="turn-score-one"></h4>
+            <ul id="player-one-rolls">
+
+            </ul>
           </div>
         </div>
+
         <div class="col-md-6">
           <h3>Player2</h3>
           <div class="row player_scoreboard">
@@ -54,11 +59,14 @@
               <h4 id="player2-score">0</h4>
             </div>
           </div>
+
           <div id="player-board-two">
-            <div class="roll-die">
-            </div>
-            <div class="die hide">
-            </div>
+            <button type="button" class=" btn btn-primary roll">Roll</button>
+            <button type="button" class=" btn btn-success hold">Hold</button>
+            <h4 id="turn-score-two"></h4>
+            <ul id="player-two-rolls">
+
+            </ul>
           </div>
         </div>
       </div>
