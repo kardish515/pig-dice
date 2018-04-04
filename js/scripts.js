@@ -41,3 +41,18 @@ Hand.prototype.updateScore = function(number) {
 
 
 //user logic
+$(document).ready(function(){
+  $("#formOne").submit(function(event){
+    event.preventDefault();
+
+    $("#mode-selection").hide();
+    var mode = $("input:radio[name=mode]:checked").val();
+    //put conditional logic for setting up vs computer
+
+    $("#game-board").toggleClass('hide');
+    $("#game-board").attr('display', 'flex');
+    $("#game-board").attr('flex-direction', 'row');
+  });
+
+
+});
