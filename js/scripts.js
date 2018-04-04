@@ -16,7 +16,7 @@ function Game() {
   this.currentPlayer = Math.floor((Math.random() * 2) + 1);
 };
 
-Turn.prototype.addRoll = function() {
+Turn.prototype.playerRoll = function() {
   var roll = 0;
 
   if (this.rollAgain === true) {
@@ -27,6 +27,22 @@ Turn.prototype.addRoll = function() {
     this.runningTotal.unshift(newRoll.value);
     } else {
       this.rollAgain = false;
+    }
+  }
+};
+
+Turn.prototype.compRoll = function() {
+  var roll = 0;
+  for (var i = 0; i < 2; i++) {
+    if (this.rollAgain === true) {
+      roll = Math.floor((Math.random() * 6) + 1);
+      var newRoll = new Die(roll);
+
+      if(newRoll.value !== 1){
+      this.runningTotal.unshift(newRoll.value);
+      } else {
+        this.rollAgain = false;
+      }
     }
   }
 };
@@ -48,6 +64,14 @@ Hand.prototype.updateScore = function(number) {
   this.total += number;
 };
 
+Hand.prototype.checkWin = function(){
+  if(this.total >= 100){
+    return true;
+  }else{
+    return false;
+  }
+};
+
 Game.prototype.changePlayer = function() {
   if (this.currentPlayer === 1) {
     this.currentPlayer = 2;
@@ -57,21 +81,21 @@ Game.prototype.changePlayer = function() {
 }
 
 
+
 //user logic
 $(document).ready(function(){
-  // $("#formOne").submit(function(event){
-  //   event.preventDefault();
-  //
-  //   $("#mode-selection").hide();
-  //   var mode = $("input:radio[name=mode]:checked").val();
-  //   //put conditional logic for setting up vs computer
-  //
-  //   $("#game-board").toggleClass('hide');
-  //   $("#game-board").attr('display', 'flex');
-  //   $("#game-board").attr('flex-direction', 'row');
-  //
-  // });
+  var mode = "";
+  $("#formOne").submit(function(event){
+    event.preventDefault();
 
+    $("#mode-selection").hide();
+    mode = $("input:radio[name=mode]:checked").val();
+    //put conditional logic for setting up vs computer
+
+    $("#game-board").toggleClass('hide');
+    $("#game-board").attr('display', 'flex');
+    $("#game-board").attr('flex-direction', 'row');
+  });
   var newGame = new Game();
 
   var playerOneHand = new Hand();
@@ -92,82 +116,139 @@ $(document).ready(function(){
     $("#player-board-one button.roll").hide();
     $("#player-board-one button.hold").hide();
   }
+  if(mode === "single"){
+    $("#player-board-one button.roll").click(function() {
+      currentTurn1.playerRoll();
+      if (currentTurn1.rollAgain === true){
+        $("ul#player-one-rolls").append("<li>" + runningTotal1[0] + "</li>");
+        turnScore1 = currentTurn1.sumArray();
+        $("#turn-score-one").text(turnScore1);
+      } else {
+        $("ul#player-one-rolls").append("<li>Bust!</li>");
+        $("#turn-score-one").text("Bust!");
 
-  $("#player-board-one button.roll").click(function() {
-    currentTurn1.addRoll();
-    if (currentTurn1.rollAgain === true){
-      $("ul#player-one-rolls").append("<li>" + runningTotal1[0] + "</li>");
-      turnScore1 = currentTurn1.sumArray();
-      $("#turn-score-one").text(turnScore1);
-    } else {
-      $("ul#player-one-rolls").append("<li>Bust!</li>");
-      $("#turn-score-one").text("Bust!");
+        $("#player-board-one button.roll").hide();
+        $("#player-board-one button.hold").hide();
+        $("#player-board-two button.roll").show();
+        $("#player-board-two button.hold").show();
 
-      $("#player-board-one button.roll").hide();
-      $("#player-board-one button.hold").hide();
-      $("#player-board-two button.roll").show();
-      $("#player-board-two button.hold").show();
+        $("ul#player-one-rolls").empty();
+        $("#turn-score-one").empty();
 
-      $("ul#player-one-rolls").empty();
-      $("#turn-score-one").empty();
+        currentTurn1.resetTurnStats();
+        runningTotal1 = currentTurn1.runningTotal;
+      }
+    });
 
-      currentTurn1.resetTurnStats();
-      runningTotal1 = currentTurn1.runningTotal;
-    }
-  });
+    $("#player-board-one button.hold").click(function(){
+      playerOneHand.updateScore(turnScore1);
+      if(playerOneHand.checkWin()){
+        $("#player1-score").text(playerOneHand.total);
+        alert("You've won!");
+      }else{
+        $("#player1-score").text(playerOneHand.total);
 
-  $("#player-board-one button.hold").click(function(){
-    playerOneHand.updateScore(turnScore1);
-    $("#player1-score").text(playerOneHand.total);
+        $("#player-board-one button.roll").hide();
+        $("#player-board-one button.hold").hide();
+        $("#player-board-two button.roll").show();
+        $("#player-board-two button.hold").show();
 
-    $("#player-board-one button.roll").hide();
-    $("#player-board-one button.hold").hide();
-    $("#player-board-two button.roll").show();
-    $("#player-board-two button.hold").show();
+        $("ul#player-one-rolls").empty();
+        $("#turn-score-one").empty();
 
-    $("ul#player-one-rolls").empty();
-    $("#turn-score-one").empty();
+        currentTurn1.resetTurnStats();
+        runningTotal1 = currentTurn1.runningTotal;
+      }
+    });
+  } else{
+    $("#player-board-one button.roll").click(function() {
+      currentTurn1.playerRoll();
+      if (currentTurn1.rollAgain === true){
+        $("ul#player-one-rolls").append("<li>" + runningTotal1[0] + "</li>");
+        turnScore1 = currentTurn1.sumArray();
+        $("#turn-score-one").text(turnScore1);
+      } else {
+        $("ul#player-one-rolls").append("<li>Bust!</li>");
+        $("#turn-score-one").text("Bust!");
 
-    currentTurn1.resetTurnStats();
-    runningTotal1 = currentTurn1.runningTotal;
-  });
+        $("#player-board-one button.roll").hide();
+        $("#player-board-one button.hold").hide();
+        $("#player-board-two button.roll").show();
+        $("#player-board-two button.hold").show();
 
-  $("#player-board-two button.roll").click(function() {
-    currentTurn2.addRoll();
-    if (currentTurn2.rollAgain === true){
-      $("ul#player-two-rolls").append("<li>" + runningTotal2[0] + "</li>");
-      turnScore2 = currentTurn2.sumArray();
-      $("#turn-score-two").text(turnScore2);
-    } else {
-      $("ul#player-two-rolls").append("<li>Bust!</li>");
-      $("#turn-score-two").text("Bust!");
+        $("ul#player-one-rolls").empty();
+        $("#turn-score-one").empty();
 
-      $("#player-board-two button.roll").hide();
-      $("#player-board-two button.hold").hide();
-      $("#player-board-one button.roll").show();
-      $("#player-board-one button.hold").show();
+        currentTurn1.resetTurnStats();
+        runningTotal1 = currentTurn1.runningTotal;
+      }
+    });
 
-      $("ul#player-two-rolls").empty();
-      $("#turn-score-two").empty();
+    $("#player-board-one button.hold").click(function(){
+      playerOneHand.updateScore(turnScore1);
+      if(playerOneHand.checkWin()){
+        $("#player1-score").text(playerOneHand.total);
+        alert("You've won!");
+      }else{
+        $("#player1-score").text(playerOneHand.total);
 
-      currentTurn2.resetTurnStats();
-      runningTotal2 = currentTurn2.runningTotal;
-    }
-  });
+        $("#player-board-one button.roll").hide();
+        $("#player-board-one button.hold").hide();
+        $("#player-board-two button.roll").show();
+        $("#player-board-two button.hold").show();
 
-  $("#player-board-two button.hold").click(function(){
-    playerTwoHand.updateScore(turnScore2);
-    $("#player2-score").text(playerTwoHand.total);
+        $("ul#player-one-rolls").empty();
+        $("#turn-score-one").empty();
 
-    $("#player-board-two button.roll").hide();
-    $("#player-board-two button.hold").hide();
-    $("#player-board-one button.roll").show();
-    $("#player-board-one button.hold").show();
+        currentTurn1.resetTurnStats();
+        runningTotal1 = currentTurn1.runningTotal;
+      }
+    });
 
-    $("ul#player-two-rolls").empty();
-    $("#turn-score-two").empty();
+    $("#player-board-two button.roll").click(function() {
+      currentTurn2.playerRoll();
+      if (currentTurn2.rollAgain === true){
+        $("ul#player-two-rolls").append("<li>" + runningTotal2[0] + "</li>");
+        turnScore2 = currentTurn2.sumArray();
+        $("#turn-score-two").text(turnScore2);
+      } else {
+        $("ul#player-two-rolls").append("<li>Bust!</li>");
+        $("#turn-score-two").text("Bust!");
 
-    currentTurn2.resetTurnStats();
-    runningTotal2 = currentTurn2.runningTotal;
-  });
+        $("#player-board-two button.roll").hide();
+        $("#player-board-two button.hold").hide();
+        $("#player-board-one button.roll").show();
+        $("#player-board-one button.hold").show();
+
+        $("ul#player-two-rolls").empty();
+        $("#turn-score-two").empty();
+
+        currentTurn2.resetTurnStats();
+        runningTotal2 = currentTurn2.runningTotal;
+      }
+    });
+
+    $("#player-board-two button.hold").click(function(){
+      playerTwoHand.updateScore(turnScore2);
+      if(playerTwoHand.checkWin()){
+        $("#player2-score").text(playerTwoHand.total);
+        alert("You've won!");
+      } else{
+        $("#player2-score").text(playerTwoHand.total);
+
+        $("#player-board-two button.roll").hide();
+        $("#player-board-two button.hold").hide();
+        $("#player-board-one button.roll").show();
+        $("#player-board-one button.hold").show();
+
+        $("ul#player-two-rolls").empty();
+        $("#turn-score-two").empty();
+
+        currentTurn2.resetTurnStats();
+        runningTotal2 = currentTurn2.runningTotal;
+      }
+    });
+  }
+
+
 });
